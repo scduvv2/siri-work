@@ -1,6 +1,6 @@
 import csv
 # this many columns are always present.
-always_present_columns_index=43
+always_present_columns_index=42
 
 # total number of columnns you will need in the target file. this is sum of fixed columns and all the optional columns
 # 3 *J1 3*J2+ 1*K4 + 1*L1
@@ -46,6 +46,7 @@ def process_line(line):
     if  len(columns)> columnIndex:
       segment_in_file = columns[columnIndex]
       if(segment==segment_in_file):
+        write_columns.append(segment)
         # has to do -1 for 0 based index as range function is end inclusive
         for col_to_add_index in range (segment_columns[segment]-1):
           columnIndex = columnIndex + 1
