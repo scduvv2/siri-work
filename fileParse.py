@@ -31,29 +31,38 @@ def process_file(in_file,out_file):
         # than using indices
         wite_line = process_line(line)
         out_file.write(wite_line)
+        out_file.write('\n')
       
 def process_line(line):
   columns = line.split('|')
   write_columns = []
   columnIndex=0
   # as it is always guarnteed that always_present_columns_count are there, adding them first to the write column
-  while columnIndex < always_present_columns_index:
+  while columnIndex <= always_present_columns_index:
       write_columns.append(columns[columnIndex])
       columnIndex = columnIndex+1
 
   for segment in segment_sequence:
-    segment_in_file = columns[columnIndex]
-    if(segment==segment_in_file):
-      for col_to_add_index in range (segment_columns[segment]):
-        columnIndex = columnIndex + col_to_add_index
-        val = columns[columnIndex]
-        write_columns.append(val)
-    else:
+    if  len(columns)> columnIndex:
+      segment_in_file = columns[columnIndex]
+      if(segment==segment_in_file):
+        # has to do -1 for 0 based index as range function is end inclusive
+        for col_to_add_index in range (segment_columns[segment]-1):
+          columnIndex = columnIndex + 1
+          val = columns[columnIndex]
+          write_columns.append(val)
+      else:
+        write_columns.append(segment)
+        for i in range (segment_columns[segment]):
+          
+          write_columns.append('')
+    else :
       write_columns.append(segment)
-      for i in range (segment_columns[segment]):
-        
-        write_columns.append(None)
+      for i in range (segment_columns[segment]):                    
+        write_columns.append('')
+  delim='|'
+  return_value = delim.join(write_columns)
 
-  return "|".join(write_columns);
+  return return_value
 
 process_file('sample.txt','output.txt')
