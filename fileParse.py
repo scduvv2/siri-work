@@ -1,6 +1,24 @@
 import csv
-csv.register_dialect('piper', delimiter='|', quoting=csv.QUOTE_NONE)
-def read_file(in_file,out_file):
+# this many columns are always present.
+always_present_columns_index=43
+
+# total number of columnns you will need in the target file. this is sum of fixed columns and all the optional columns
+# 3 *J1 3*J2+ 1*K4 + 1*L1
+# J1=11
+# J2 = 19
+# K4=6
+# L1=5 
+total_number_of_columns = 44+(3*11)+(3*19)+(1*6)+(1*5)
+segment_sequence = ['J1','J1','J1','J2','J2','J2','K4','L1']
+segment_columns={
+  "J1": 11,
+  "J2":19,
+  "K4": 6,
+  "L1": 5
+
+}
+
+def process_file(in_file,out_file):
   with open(in_file, mode='r') as in_file, \
      open(out_file, mode='w') as out_file:
    # A file is iterable
@@ -15,6 +33,27 @@ def read_file(in_file,out_file):
         out_file.write(wite_line)
       
 def process_line(line):
+  columns = line.split('|')
+  write_columns = []
+  columnIndex=0
+  # as it is always guarnteed that always_present_columns_count are there, adding them first to the write column
+  while columnIndex < always_present_columns_index:
+      write_columns.append(columns[columnIndex])
+      columnIndex = columnIndex+1
 
-  return "";
-read_file('sample.txt','output.txt')
+  for segment in segment_sequence:
+    segment_in_file = columns[columnIndex]
+    if(segment==segment_in_file):
+      for col_to_add_index in range (segment_columns[segment]):
+        columnIndex = columnIndex + col_to_add_index
+        val = columns[columnIndex]
+        write_columns.append(val)
+    else:
+      write_columns.append(segment)
+      for i in range (segment_columns[segment]):
+        
+        write_columns.append(None)
+
+  return "|".join(write_columns);
+
+process_file('sample.txt','output.txt')
